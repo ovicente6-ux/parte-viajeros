@@ -799,12 +799,9 @@ function clearFirma() { ctx.clearRect(0,0,canvas.width,canvas.height); firmaData
 
 // --- CONFIG ---
 function saveConfig() {
-  config.alojamiento = document.getElementById('cfg-alojamiento').value.trim();
-  config.direccion   = document.getElementById('cfg-direccion').value.trim();
-  config.municipio   = document.getElementById('cfg-municipio').value.trim();
-  const h = config.alojamiento || 'Alojamiento turístico';
-  document.getElementById('prop-name-header').textContent = h;
-  goStep(1);
+  config.alojamiento = 'El Rincon de San Miguel';
+  config.direccion   = 'Calle Comandante Repolles 6';
+  config.municipio   = 'Zaragoza';
 }
 
 // --- NAVEGACIÓN ---
@@ -871,7 +868,7 @@ function nextStep(from) {
 }
 
 // --- ENVÍO A GOOGLE SHEETS ---
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpO9X-RKy60bWV6VXZSHwUw7QB0xlpDdFk-wG5AKJkjWzAZskXU80BMBnblez2MnQ/exec';
+const APPS_SCRIPT_URL = 'PEGA_AQUI_TU_URL_DE_APPS_SCRIPT';
 
 async function submitToSheets() {
   const btn = document.querySelector('#step-4 .btn-primary');
@@ -1062,11 +1059,18 @@ function resetForm() {
 
 // --- INIT fecha entrada por defecto ---
 window.addEventListener('load', () => {
+  // Config fija del propietario
+  saveConfig();
+  document.getElementById('prop-name-header').textContent = config.alojamiento;
+
+  // Fechas por defecto
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('fecha-entrada').value = today;
   const tom = new Date(); tom.setDate(tom.getDate()+2);
   document.getElementById('fecha-salida').value = tom.toISOString().split('T')[0];
-  document.getElementById('prop-name-header').textContent = 'Configura tu alojamiento abajo v';
+
+  // Saltar directamente al paso 1 (el huesped nunca ve la config)
+  goStep(1);
 });
 </script>
 </body>
