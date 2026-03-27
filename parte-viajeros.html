@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Registro de Viajeros</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F3EE;
+    --warm-white: #FDFAF7;
+    --gold: #C4973A;
+    --gold-light: #E8C97A;
+    --dark: #1A1714;
+    --mid: #5C5047;
+    --light-border: #E2D9CF;
+    --error: #C0392B;
+    --success: #2E7D5E;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--dark);
+    color: var(--cream);
+    padding: 28px 24px 22px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .header-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .header-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+  }
+  .header-sub {
+    font-size: 12px;
+    color: #A09080;
+    margin-top: 6px;
+    font-weight: 300;
+  }
+
+  /* PROGRESS */
+  .progress-wrap {
+    background: var(--dark);
+    padding: 0 24px 20px;
+    display: flex;
+    gap: 6px;
+  }
+  .progress-dot {
+    flex: 1;
+    height: 2px;
+    background: #3A342E;
+    border-radius: 2px;
+    transition: background 0.4s;
+  }
+  .progress-dot.active { background: var(--gold); }
+  .progress-dot.done { background: var(--gold-light); }
+
+  /* STEP LABELS */
+  .step-label {
+    background: var(--warm-white);
+    padding: 16px 24px 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--dark);
+    color: var(--gold);
+    font-size: 12px;
+    font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .step-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 300;
+    color: var(--dark);
+  }
+  .step-desc {
+    padding: 4px 24px 16px 62px;
+    font-size: 12px;
+    color: var(--mid);
+    background: var(--warm-white);
+    font-weight: 300;
+  }
+
+  /* CARD */
+  .card {
+    margin: 0 16px 16px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid var(--light-border);
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  /* FIELDS */
+  .field {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--light-border);
+    position: relative;
+  }
+  .field:last-child { border-bottom: none; }
+  .field label {
+    display: block;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .field input,
+  .field select {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--dark);
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23C4973A' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 4px center;
+    padding-right: 24px;
+  }
+  .field input::placeholder { color: #C5B9AE; font-weight: 300; }
+
+  .field.required label::after {
+    content: ' *';
+    color: var(--gold);
+  }
+
+  .field.error input,
+  .field.error select {
+    color: var(--error);
+  }
+  .field .err-msg {
+    font-size: 11px;
+    color: var(--error);
+    margin-top: 4px;
+    display: none;
+  }
+  .field.error .err-msg { display: block; }
+
+  /* INLINE ROW */
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .field-row .field { border-right: 1px solid var(--light-border); }
+  .field-row .field:last-child { border-right: none; }
+
+  /* INFO BOX */
+  .info-box {
+    margin: 0 16px 16px;
+    padding: 12px 16px;
+    background: #FFF8EE;
+    border-left: 3px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    font-size: 12px;
+    color: var(--mid);
+    line-height: 1.6;
+  }
+  .info-box strong { color: var(--dark); }
+
+  /* BOTONES */
+  .btn-wrap {
+    padding: 8px 16px;
+    display: flex;
+    gap: 10px;
+  }
+  .btn {
+    flex: 1;
+    padding: 15px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--dark);
+    color: var(--gold);
+  }
+  .btn-primary:active { background: #2D2520; transform: scale(0.98); }
+  .btn-secondary {
+    background: white;
+    color: var(--mid);
+    border: 1px solid var(--light-border);
+    flex: 0 0 auto;
+    padding: 15px 20px;
+  }
+
+  /* HIDDEN STEPS */
+  .step { display: none; }
+  .step.active { display: block; }
+
+  /* SUMMARY */
+  .summary-header {
+    margin: 16px 16px 12px;
+    text-align: center;
+  }
+  .summary-header .check-icon {
+    width: 52px; height: 52px;
+    background: var(--success);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 12px;
+    font-size: 22px;
+  }
+  .summary-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 300;
+  }
+  .summary-header p {
+    font-size: 12px;
+    color: var(--mid);
+    margin-top: 4px;
+  }
+
+  .summary-section {
+    margin: 0 16px 12px;
+  }
+  .summary-section h3 {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+    padding: 10px 0 6px;
+    border-top: 1px solid var(--light-border);
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 7px 0;
+    border-bottom: 1px solid #F0EAE3;
+    font-size: 13px;
+  }
+  .summary-row .sk { color: var(--mid); font-weight: 300; min-width: 130px; }
+  .summary-row .sv { color: var(--dark); font-weight: 400; text-align: right; }
+
+  /* TEXT OUTPUT */
+  .text-output {
+    margin: 0 16px;
+    background: #F0EBE3;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    line-height: 1.8;
+    color: var(--dark);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .copy-btn {
+    display: block;
+    width: calc(100% - 32px);
+    margin: 12px 16px 0;
+    padding: 15px;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s;
+  }
+  .copy-btn:active { background: var(--gold-light); transform: scale(0.98); }
+
+  .wa-btn {
+    display: block;
+    width: calc(100% - 32px);
+    margin: 10px 16px 0;
+    padding: 15px;
+    background: #25D366;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s;
+  }
+  .wa-btn:active { background: #20BA5A; }
+
+  .new-btn {
+    display: block;
+    width: calc(100% - 32px);
+    margin: 10px 16px 20px;
+    padding: 15px;
+    background: transparent;
+    color: var(--mid);
+    border: 1px solid var(--light-border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  /* ALOJAMIENTO CONFIG */
+  .config-panel {
+    margin: 0 16px 16px;
+    background: #FFF8EE;
+    border-radius: 10px;
+    border: 1px dashed var(--gold);
+    padding: 16px;
+  }
+  .config-panel h4 {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .config-panel label {
+    display: block;
+    font-size: 11px;
+    color: var(--mid);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .config-panel input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--light-border);
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    margin-bottom: 12px;
+    background: white;
+    outline: none;
+    color: var(--dark);
+  }
+  .config-panel input:focus { border-color: var(--gold); }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--dark);
+    color: var(--gold);
+    padding: 12px 20px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: transform 0.3s;
+    z-index: 9999;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* FIRMA */
+  .firma-wrap {
+    padding: 16px 18px;
+  }
+  .firma-wrap label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 8px;
+  }
+  canvas {
+    border: 1px solid var(--light-border);
+    border-radius: 8px;
+    width: 100%;
+    height: 130px;
+    touch-action: none;
+    background: #FDFAF7;
+  }
+  .firma-btns {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 6px;
+  }
+  .firma-clear {
+    font-size: 11px;
+    color: var(--mid);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 4px;
+  }
+
+  @media (min-width: 480px) {
+    .card, .info-box, .config-panel, .summary-section, .text-output,
+    .copy-btn, .wa-btn, .new-btn, .btn-wrap {
+      max-width: 440px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .btn-wrap { padding: 8px 0; }
+    .header { padding: 36px 24px 26px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-label">Alojamiento Turístico</div>
+  <div class="header-title">Registro de Viajeros</div>
+  <div class="header-sub" id="prop-name-header">Cargando datos del alojamiento…</div>
+</div>
+<div class="progress-wrap" id="progress-bar">
+  <div class="progress-dot active" id="pd0"></div>
+  <div class="progress-dot" id="pd1"></div>
+  <div class="progress-dot" id="pd2"></div>
+  <div class="progress-dot" id="pd3"></div>
+  <div class="progress-dot" id="pd4"></div>
+</div>
+
+<div id="toast" class="toast">✓ Copiado al portapapeles</div>
+
+<!-- ══════════════════════════════════
+     STEP 0 — Config del alojamiento
+     ══════════════════════════════════ -->
+<div class="step active" id="step-0">
+  <div class="step-label">
+    <div class="step-num">✦</div>
+    <div class="step-name">Datos del alojamiento</div>
+  </div>
+  <div class="step-desc">Rellena estos datos una vez. Se añadirán automáticamente al parte.</div>
+
+  <div class="config-panel" style="margin-top:12px">
+    <h4>Configuración del propietario</h4>
+    <label>Nombre del alojamiento</label>
+    <input id="cfg-alojamiento" placeholder="Ej: Piso Centro Zaragoza" />
+    <label>Dirección completa</label>
+    <input id="cfg-direccion" placeholder="Calle, nº, CP, municipio" />
+    <label>Municipio</label>
+    <input id="cfg-municipio" placeholder="Ej: Zaragoza" />
+  </div>
+
+  <div class="btn-wrap">
+    <button class="btn btn-primary" onclick="saveConfig()">Guardar y continuar →</button>
+  </div>
+
+  <div class="info-box">
+    <strong>¿Qué es esto?</strong> Este formulario genera automáticamente el parte de viajeros obligatorio según el <strong>RD 933/2021</strong>. El propietario del alojamiento es responsable de registrar los datos en el SES (Ministerio del Interior) en un plazo máximo de <strong>24h</strong> desde la entrada.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     STEP 1 — Datos personales
+     ══════════════════════════════════ -->
+<div class="step" id="step-1">
+  <div class="step-label">
+    <div class="step-num">1</div>
+    <div class="step-name">Datos personales</div>
+  </div>
+  <div class="step-desc">Datos del viajero tal como aparecen en el documento de identidad.</div>
+
+  <div class="card">
+    <div class="field required" id="f-nombre">
+      <label>Nombre</label>
+      <input type="text" id="nombre" placeholder="Nombre" autocomplete="given-name" />
+      <span class="err-msg">Campo obligatorio</span>
+    </div>
+    <div class="field required" id="f-apellidos">
+      <label>Apellidos</label>
+      <input type="text" id="apellidos" placeholder="Primer apellido Segundo apellido" autocomplete="family-name" />
+      <span class="err-msg">Campo obligatorio</span>
+    </div>
+    <div class="field-row">
+      <div class="field required" id="f-fecha-nac">
+        <label>Fecha nacimiento</label>
+        <input type="date" id="fecha-nac" />
+        <span class="err-msg">Obligatorio</span>
+      </div>
+      <div class="field required" id="f-sexo">
+        <label>Sexo</label>
+        <select id="sexo">
+          <option value="">—</option>
+          <option value="M">Masculino</option>
+          <option value="F">Femenino</option>
+          <option value="X">No binario / otro</option>
+        </select>
+        <span class="err-msg">Obligatorio</span>
+      </div>
+    </div>
+    <div class="field required" id="f-nac">
+      <label>País de nacimiento</label>
+      <input type="text" id="pais-nac" placeholder="España, Francia, México…" list="paises-list" />
+      <span class="err-msg">Campo obligatorio</span>
+    </div>
+  </div>
+
+  <div class="btn-wrap">
+    <button class="btn btn-secondary" onclick="goStep(0)">←</button>
+    <button class="btn btn-primary" onclick="nextStep(1)">Continuar →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     STEP 2 — Documento de identidad
+     ══════════════════════════════════ -->
+<div class="step" id="step-2">
+  <div class="step-label">
+    <div class="step-num">2</div>
+    <div class="step-name">Documento de identidad</div>
+  </div>
+  <div class="step-desc">Introduce los datos exactos de tu DNI, pasaporte o NIE.</div>
+
+  <div class="card">
+    <div class="field required" id="f-tipo-doc">
+      <label>Tipo de documento</label>
+      <select id="tipo-doc" onchange="toggleSoporte()">
+        <option value="">Selecciona…</option>
+        <option value="DNI">DNI</option>
+        <option value="NIE">NIE</option>
+        <option value="PAS">Pasaporte</option>
+        <option value="TIE">TIE (Tarjeta Identidad Extranjero)</option>
+        <option value="OTRO">Otro documento oficial</option>
+      </select>
+      <span class="err-msg">Obligatorio</span>
+    </div>
+    <div class="field required" id="f-num-doc">
+      <label>Número de documento</label>
+      <input type="text" id="num-doc" placeholder="12345678A" autocomplete="off" style="text-transform:uppercase" />
+      <span class="err-msg">Campo obligatorio</span>
+    </div>
+    <div class="field" id="f-soporte" style="display:none">
+      <label>Número de soporte (DNI)</label>
+      <input type="text" id="num-soporte" placeholder="AAA000000" autocomplete="off" style="text-transform:uppercase" />
+      <div style="font-size:11px;color:var(--mid);margin-top:4px">Dígitos en el reverso del DNI, bajo «IDESP» o «Nº SOPORTE»</div>
+    </div>
+    <div class="field-row">
+      <div class="field required" id="f-exp-doc">
+        <label>Fecha expedición</label>
+        <input type="date" id="fecha-exp" />
+        <span class="err-msg">Obligatorio</span>
+      </div>
+      <div class="field required" id="f-nac2">
+        <label>Nacionalidad</label>
+        <input type="text" id="nacionalidad" placeholder="Española…" list="paises-list" />
+        <span class="err-msg">Obligatorio</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <strong>¿Para qué se usan estos datos?</strong> El RD 933/2021 obliga a los alojamientos turísticos a recoger y transmitir datos de identidad al Ministerio del Interior (Cuerpo Nacional de Policía o Guardia Civil, según la zona). Los datos se tratan con estricta confidencialidad.
+  </div>
+
+  <div class="btn-wrap">
+    <button class="btn btn-secondary" onclick="goStep(1)">←</button>
+    <button class="btn btn-primary" onclick="nextStep(2)">Continuar →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     STEP 3 — Residencia habitual
+     ══════════════════════════════════ -->
+<div class="step" id="step-3">
+  <div class="step-label">
+    <div class="step-num">3</div>
+    <div class="step-name">Residencia habitual</div>
+  </div>
+  <div class="step-desc">Lugar donde resides habitualmente (no el destino del viaje).</div>
+
+  <div class="card">
+    <div class="field required" id="f-pais-res">
+      <label>País de residencia</label>
+      <input type="text" id="pais-res" placeholder="España, Francia…" list="paises-list" />
+      <span class="err-msg">Campo obligatorio</span>
+    </div>
+    <div class="field required" id="f-municipio-res">
+      <label>Municipio de residencia</label>
+      <input type="text" id="municipio-res" placeholder="Madrid, Barcelona, Lyon…" />
+      <span class="err-msg">Campo obligatorio</span>
+    </div>
+  </div>
+
+  <div class="btn-wrap">
+    <button class="btn btn-secondary" onclick="goStep(2)">←</button>
+    <button class="btn btn-primary" onclick="nextStep(3)">Continuar →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     STEP 4 — Estancia y firma
+     ══════════════════════════════════ -->
+<div class="step" id="step-4">
+  <div class="step-label">
+    <div class="step-num">4</div>
+    <div class="step-name">Estancia y firma</div>
+  </div>
+  <div class="step-desc">Confirma las fechas de tu estancia y firma el registro.</div>
+
+  <div class="card">
+    <div class="field-row">
+      <div class="field required" id="f-entrada">
+        <label>Fecha de entrada</label>
+        <input type="date" id="fecha-entrada" />
+        <span class="err-msg">Obligatorio</span>
+      </div>
+      <div class="field required" id="f-salida">
+        <label>Fecha de salida</label>
+        <input type="date" id="fecha-salida" />
+        <span class="err-msg">Obligatorio</span>
+      </div>
+    </div>
+    <div class="field" id="f-reserva">
+      <label>Nº de reserva Airbnb</label>
+      <input type="text" id="num-reserva" placeholder="HMXXXXXXXX" autocomplete="off" style="text-transform:uppercase" />
+      <div style="font-size:11px;color:var(--mid);margin-top:4px">Lo encuentras en el correo de confirmación de Airbnb</div>
+    </div>
+    <div class="field" id="f-relacion">
+      <label>Relación con otros viajeros (si aplica)</label>
+      <select id="relacion">
+        <option value="">Solo/a</option>
+        <option value="Titular de la reserva">Titular de la reserva</option>
+        <option value="Acompañante">Acompañante</option>
+        <option value="Menor a cargo">Menor a cargo</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="firma-wrap">
+      <label>Firma del viajero</label>
+      <canvas id="firma-canvas"></canvas>
+      <div class="firma-btns">
+        <button class="firma-clear" onclick="clearFirma()">Borrar firma</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    Al firmar confirmas que los datos facilitados son <strong>verídicos y completos</strong>, conforme al artículo 25 de la Ley Orgánica 4/2015 de Seguridad Ciudadana y el RD 933/2021.
+  </div>
+
+  <div class="btn-wrap">
+    <button class="btn btn-secondary" onclick="goStep(3)">←</button>
+    <button class="btn btn-primary" onclick="nextStep(4)">Enviar registro →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     STEP 5 — Resumen / Parte generado
+     ══════════════════════════════════ -->
+<div class="step" id="step-5">
+  <div class="summary-header">
+    <div class="check-icon">✓</div>
+    <h2>Registro completado</h2>
+    <p>El propietario del alojamiento procesará tu parte en las próximas 24h.</p>
+  </div>
+
+  <div class="summary-section">
+    <h3>Datos personales</h3>
+    <div class="summary-row"><span class="sk">Nombre completo</span><span class="sv" id="rs-nombre">—</span></div>
+    <div class="summary-row"><span class="sk">Fecha nacimiento</span><span class="sv" id="rs-fecha-nac">—</span></div>
+    <div class="summary-row"><span class="sk">Sexo</span><span class="sv" id="rs-sexo">—</span></div>
+    <div class="summary-row"><span class="sk">País nacimiento</span><span class="sv" id="rs-pais-nac">—</span></div>
+  </div>
+
+  <div class="summary-section">
+    <h3>Documento de identidad</h3>
+    <div class="summary-row"><span class="sk">Tipo</span><span class="sv" id="rs-tipo-doc">—</span></div>
+    <div class="summary-row"><span class="sk">Número</span><span class="sv" id="rs-num-doc">—</span></div>
+    <div class="summary-row" id="rs-soporte-row" style="display:none"><span class="sk">Nº soporte</span><span class="sv" id="rs-soporte">—</span></div>
+    <div class="summary-row"><span class="sk">Fecha expedición</span><span class="sv" id="rs-exp">—</span></div>
+    <div class="summary-row"><span class="sk">Nacionalidad</span><span class="sv" id="rs-nac">—</span></div>
+  </div>
+
+  <div class="summary-section">
+    <h3>Residencia y estancia</h3>
+    <div class="summary-row"><span class="sk">País residencia</span><span class="sv" id="rs-pais-res">—</span></div>
+    <div class="summary-row"><span class="sk">Municipio residencia</span><span class="sv" id="rs-mun-res">—</span></div>
+    <div class="summary-row"><span class="sk">Entrada</span><span class="sv" id="rs-entrada">—</span></div>
+    <div class="summary-row"><span class="sk">Salida</span><span class="sv" id="rs-salida">—</span></div>
+    <div class="summary-row"><span class="sk">Alojamiento</span><span class="sv" id="rs-alojamiento">—</span></div>
+    <div class="summary-row"><span class="sk">Reserva Airbnb</span><span class="sv" id="rs-reserva">—</span></div>
+  </div>
+
+  <div class="summary-section">
+    <h3>Texto del parte (para copiar al SES)</h3>
+  </div>
+  <div class="text-output" id="texto-parte"></div>
+
+  <button class="copy-btn" onclick="copyParte()">📋 Copiar parte completo</button>
+
+  <a id="wa-share-btn" class="wa-btn" href="#" onclick="shareWhatsApp(event)">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Compartir por WhatsApp
+  </a>
+
+  <button class="new-btn" onclick="resetForm()">+ Registrar otro viajero</button>
+</div>
+
+<!-- DATALIST países -->
+<datalist id="paises-list">
+  <option value="España"><option value="Francia"><option value="Alemania"><option value="Italia">
+  <option value="Portugal"><option value="Reino Unido"><option value="Estados Unidos"><option value="México">
+  <option value="Argentina"><option value="Colombia"><option value="Brasil"><option value="Países Bajos">
+  <option value="Bélgica"><option value="Suiza"><option value="Austria"><option value="Polonia">
+  <option value="Rumanía"><option value="Marruecos"><option value="China"><option value="Japón">
+  <option value="Australia"><option value="Canadá"><option value="Rusia">
+</datalist>
+
+<script>
+// ─── STATE ───
+let currentStep = 0;
+const config = { alojamiento:'', direccion:'', registro:'', municipio:'' };
+
+// ─── FIRMA ───
+const canvas = document.getElementById('firma-canvas');
+const ctx = canvas.getContext('2d');
+let drawing = false;
+let firmaData = null;
+
+function resizeCanvas() {
+  const ratio = window.devicePixelRatio || 1;
+  const w = canvas.offsetWidth;
+  const h = canvas.offsetHeight;
+  canvas.width = w * ratio;
+  canvas.height = h * ratio;
+  ctx.scale(ratio, ratio);
+}
+window.addEventListener('resize', resizeCanvas);
+setTimeout(resizeCanvas, 100);
+
+function getPos(e, c) {
+  const r = c.getBoundingClientRect();
+  if (e.touches) return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top };
+  return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+
+canvas.addEventListener('mousedown', e => { drawing=true; const p=getPos(e,canvas); ctx.beginPath(); ctx.moveTo(p.x,p.y); });
+canvas.addEventListener('mousemove', e => { if(!drawing) return; const p=getPos(e,canvas); ctx.lineTo(p.x,p.y); ctx.strokeStyle='#1A1714'; ctx.lineWidth=2; ctx.lineCap='round'; ctx.stroke(); });
+canvas.addEventListener('mouseup', () => { drawing=false; firmaData=canvas.toDataURL(); });
+canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing=true; const p=getPos(e,canvas); ctx.beginPath(); ctx.moveTo(p.x,p.y); }, {passive:false});
+canvas.addEventListener('touchmove', e => { e.preventDefault(); if(!drawing) return; const p=getPos(e,canvas); ctx.lineTo(p.x,p.y); ctx.strokeStyle='#1A1714'; ctx.lineWidth=2; ctx.lineCap='round'; ctx.stroke(); }, {passive:false});
+canvas.addEventListener('touchend', () => { drawing=false; firmaData=canvas.toDataURL(); });
+
+function clearFirma() { ctx.clearRect(0,0,canvas.width,canvas.height); firmaData=null; }
+
+// ─── CONFIG ───
+function saveConfig() {
+  config.alojamiento = document.getElementById('cfg-alojamiento').value.trim();
+  config.direccion   = document.getElementById('cfg-direccion').value.trim();
+  config.municipio   = document.getElementById('cfg-municipio').value.trim();
+  const h = config.alojamiento || 'Alojamiento turístico';
+  document.getElementById('prop-name-header').textContent = h;
+  goStep(1);
+}
+
+// ─── NAVEGACIÓN ───
+function goStep(n) {
+  document.getElementById('step-'+currentStep).classList.remove('active');
+  document.getElementById('step-'+n).classList.add('active');
+  currentStep = n;
+  updateProgress();
+  window.scrollTo(0,0);
+}
+
+function updateProgress() {
+  for(let i=0;i<5;i++){
+    const d=document.getElementById('pd'+i);
+    if(!d) continue;
+    d.classList.remove('active','done');
+    if(i===currentStep-1) d.classList.add('active');
+    else if(i<currentStep-1) d.classList.add('done');
+  }
+}
+
+// ─── VALIDACIÓN ───
+const stepValidations = {
+  1: [
+    { field:'nombre', id:'f-nombre', msg:'Campo obligatorio' },
+    { field:'apellidos', id:'f-apellidos', msg:'Campo obligatorio' },
+    { field:'fecha-nac', id:'f-fecha-nac', msg:'Obligatorio' },
+    { field:'sexo', id:'f-sexo', msg:'Obligatorio' },
+    { field:'pais-nac', id:'f-nac', msg:'Campo obligatorio' },
+  ],
+  2: [
+    { field:'tipo-doc', id:'f-tipo-doc', msg:'Obligatorio' },
+    { field:'num-doc', id:'f-num-doc', msg:'Campo obligatorio' },
+    { field:'fecha-exp', id:'f-exp-doc', msg:'Obligatorio' },
+    { field:'nacionalidad', id:'f-nac2', msg:'Obligatorio' },
+  ],
+  3: [
+    { field:'pais-res', id:'f-pais-res', msg:'Campo obligatorio' },
+    { field:'municipio-res', id:'f-municipio-res', msg:'Campo obligatorio' },
+  ],
+  4: [
+    { field:'fecha-entrada', id:'f-entrada', msg:'Obligatorio' },
+    { field:'fecha-salida', id:'f-salida', msg:'Obligatorio' },
+  ]
+};
+
+function validate(step) {
+  const rules = stepValidations[step];
+  if(!rules) return true;
+  let ok = true;
+  for(const r of rules) {
+    const v = document.getElementById(r.field).value.trim();
+    const fw = document.getElementById(r.id);
+    fw.classList.remove('error');
+    if(!v) { fw.classList.add('error'); ok=false; }
+  }
+  return ok;
+}
+
+function nextStep(from) {
+  if(!validate(from)) { window.scrollTo(0,80); return; }
+  if(from===4) { submitToSheets(); }
+  else goStep(from+1);
+}
+
+// ─── ENVÍO A GOOGLE SHEETS ───
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpO9X-RKy60bWV6VXZSHwUw7QB0xlpDdFk-wG5AKJkjWzAZskXU80BMBnblez2MnQ/exec;
+
+async function submitToSheets() {
+  const btn = document.querySelector('#step-4 .btn-primary');
+  btn.textContent = 'Enviando…';
+  btn.disabled = true;
+
+  const nombre  = document.getElementById('nombre').value.trim();
+  const apellidos = document.getElementById('apellidos').value.trim();
+  const sexoMap = {M:'Masculino',F:'Femenino',X:'No binario / otro'};
+
+  const payload = {
+    timestamp:      new Date().toLocaleString('es-ES'),
+    alojamiento:    config.alojamiento,
+    direccion:      config.direccion,
+    municipio:      config.municipio,
+    nombre:         nombre,
+    apellidos:      apellidos,
+    fecha_nac:      document.getElementById('fecha-nac').value,
+    sexo:           sexoMap[document.getElementById('sexo').value] || '',
+    pais_nac:       document.getElementById('pais-nac').value.trim(),
+    tipo_doc:       document.getElementById('tipo-doc').value,
+    num_doc:        document.getElementById('num-doc').value.trim().toUpperCase(),
+    num_soporte:    document.getElementById('num-soporte').value.trim().toUpperCase(),
+    fecha_exp:      document.getElementById('fecha-exp').value,
+    nacionalidad:   document.getElementById('nacionalidad').value.trim(),
+    pais_res:       document.getElementById('pais-res').value.trim(),
+    municipio_res:  document.getElementById('municipio-res').value.trim(),
+    fecha_entrada:  document.getElementById('fecha-entrada').value,
+    fecha_salida:   document.getElementById('fecha-salida').value,
+    reserva_airbnb: document.getElementById('num-reserva').value.trim().toUpperCase(),
+    relacion:       document.getElementById('relacion').value,
+  };
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode:   'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    generateSummary();
+    goStep(5);
+  } catch(err) {
+    btn.textContent = 'Enviar registro →';
+    btn.disabled = false;
+    alert('Error al enviar. Comprueba tu conexión e inténtalo de nuevo.');
+    console.error(err);
+  }
+}
+
+// ─── SOPORTE DNI ───
+function toggleSoporte() {
+  const t = document.getElementById('tipo-doc').value;
+  document.getElementById('f-soporte').style.display = (t==='DNI')?'block':'none';
+}
+
+// ─── FORMATO FECHA ───
+function fmtDate(d) {
+  if(!d) return '—';
+  const [y,m,dd]=d.split('-');
+  return `${dd}/${m}/${y}`;
+}
+
+// ─── GENERAR RESUMEN ───
+function generateSummary() {
+  const nombre    = document.getElementById('nombre').value.trim();
+  const apellidos = document.getElementById('apellidos').value.trim();
+  const full = `${nombre} ${apellidos}`.trim();
+
+  const sexoMap = {M:'Masculino',F:'Femenino',X:'No binario / otro'};
+  const sexo = sexoMap[document.getElementById('sexo').value] || '—';
+
+  const tipoDoc   = document.getElementById('tipo-doc').value;
+  const numDoc    = document.getElementById('num-doc').value.trim().toUpperCase();
+  const soporte   = document.getElementById('num-soporte').value.trim().toUpperCase();
+  const fechaNac  = document.getElementById('fecha-nac').value;
+  const paisNac   = document.getElementById('pais-nac').value.trim();
+  const fechaExp  = document.getElementById('fecha-exp').value;
+  const nac       = document.getElementById('nacionalidad').value.trim();
+  const paisRes   = document.getElementById('pais-res').value.trim();
+  const munRes    = document.getElementById('municipio-res').value.trim();
+  const reserva   = document.getElementById('num-reserva').value.trim().toUpperCase();
+  const entrada   = document.getElementById('fecha-entrada').value;
+  const salida    = document.getElementById('fecha-salida').value;
+
+  // Summary card
+  document.getElementById('rs-nombre').textContent   = full || '—';
+  document.getElementById('rs-fecha-nac').textContent= fmtDate(fechaNac);
+  document.getElementById('rs-sexo').textContent     = sexo;
+  document.getElementById('rs-pais-nac').textContent = paisNac || '—';
+  document.getElementById('rs-tipo-doc').textContent = tipoDoc || '—';
+  document.getElementById('rs-num-doc').textContent  = numDoc || '—';
+  document.getElementById('rs-exp').textContent      = fmtDate(fechaExp);
+  document.getElementById('rs-nac').textContent      = nac || '—';
+  document.getElementById('rs-pais-res').textContent = paisRes || '—';
+  document.getElementById('rs-mun-res').textContent  = munRes || '—';
+  document.getElementById('rs-entrada').textContent  = fmtDate(entrada);
+  document.getElementById('rs-salida').textContent   = fmtDate(salida);
+  document.getElementById('rs-alojamiento').textContent = config.alojamiento || '—';
+  document.getElementById('rs-reserva').textContent     = reserva || '—';
+
+  if(tipoDoc==='DNI' && soporte) {
+    document.getElementById('rs-soporte-row').style.display='flex';
+    document.getElementById('rs-soporte').textContent = soporte;
+  }
+
+  // Texto parte
+  const now = new Date().toLocaleString('es-ES');
+  const lines = [
+    `PARTE DE VIAJEROS — RD 933/2021`,
+    `═══════════════════════════════════`,
+    `ALOJAMIENTO`,
+    `  Nombre:       ${config.alojamiento || 'No especificado'}`,
+    `  Dirección:    ${config.direccion || 'No especificada'}`,
+    `  Municipio:    ${config.municipio || 'No especificado'}`,
+    ``,
+    `DATOS DEL VIAJERO`,
+    `  Nombre:       ${full}`,
+    `  Fecha nac.:   ${fmtDate(fechaNac)}`,
+    `  Sexo:         ${sexo}`,
+    `  País nacim.:  ${paisNac}`,
+    `  Nacionalidad: ${nac}`,
+    ``,
+    `DOCUMENTO`,
+    `  Tipo:         ${tipoDoc}`,
+    `  Número:       ${numDoc}`,
+    tipoDoc==='DNI' && soporte ? `  Nº soporte:   ${soporte}` : null,
+    `  Expedición:   ${fmtDate(fechaExp)}`,
+    ``,
+    `RESIDENCIA HABITUAL`,
+    `  País:         ${paisRes}`,
+    `  Municipio:    ${munRes}`,
+    ``,
+    `ESTANCIA`,
+    `  Entrada:      ${fmtDate(entrada)}`,
+    `  Salida:       ${fmtDate(salida)}`,
+    `  Reserva Airbnb: ${reserva || 'No indicada'}`,
+    ``,
+    `Generado: ${now}`,
+    `Firmado digitalmente por el viajero.`,
+  ].filter(l => l !== null).join('\n');
+
+  document.getElementById('texto-parte').textContent = lines;
+  window._parteTexto = lines;
+}
+
+// ─── COPIAR ───
+function copyParte() {
+  const t = window._parteTexto || document.getElementById('texto-parte').textContent;
+  if(navigator.clipboard) {
+    navigator.clipboard.writeText(t).then(showToast).catch(()=>legacyCopy(t));
+  } else { legacyCopy(t); }
+}
+
+function legacyCopy(t) {
+  const ta = document.createElement('textarea');
+  ta.value=t; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); showToast(); } catch(e) {}
+  document.body.removeChild(ta);
+}
+
+function showToast() {
+  const toast=document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'),2500);
+}
+
+// ─── WHATSAPP ───
+function shareWhatsApp(e) {
+  e.preventDefault();
+  const t = encodeURIComponent(window._parteTexto || '');
+  window.open(`https://wa.me/?text=${t}`, '_blank');
+}
+
+// ─── RESET ───
+function resetForm() {
+  ['nombre','apellidos','fecha-nac','pais-nac','num-doc','num-soporte',
+   'fecha-exp','nacionalidad','pais-res','municipio-res','fecha-entrada','fecha-salida','num-reserva']
+    .forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('sexo').value='';
+  document.getElementById('tipo-doc').value='';
+  document.getElementById('relacion').value='';
+  document.getElementById('f-soporte').style.display='none';
+  clearFirma();
+  goStep(1);
+}
+
+// ─── INIT fecha entrada por defecto ───
+window.addEventListener('load', () => {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('fecha-entrada').value = today;
+  const tom = new Date(); tom.setDate(tom.getDate()+2);
+  document.getElementById('fecha-salida').value = tom.toISOString().split('T')[0];
+  document.getElementById('prop-name-header').textContent = 'Configura tu alojamiento abajo ↓';
+});
+</script>
+</body>
+</html>
