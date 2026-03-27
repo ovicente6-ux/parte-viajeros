@@ -761,11 +761,11 @@
 </datalist>
 
 <script>
-// ─── STATE ───
+// --- STATE ---
 let currentStep = 0;
 const config = { alojamiento:'', direccion:'', registro:'', municipio:'' };
 
-// ─── FIRMA ───
+// --- FIRMA ---
 const canvas = document.getElementById('firma-canvas');
 const ctx = canvas.getContext('2d');
 let drawing = false;
@@ -797,7 +797,7 @@ canvas.addEventListener('touchend', () => { drawing=false; firmaData=canvas.toDa
 
 function clearFirma() { ctx.clearRect(0,0,canvas.width,canvas.height); firmaData=null; }
 
-// ─── CONFIG ───
+// --- CONFIG ---
 function saveConfig() {
   config.alojamiento = document.getElementById('cfg-alojamiento').value.trim();
   config.direccion   = document.getElementById('cfg-direccion').value.trim();
@@ -807,7 +807,7 @@ function saveConfig() {
   goStep(1);
 }
 
-// ─── NAVEGACIÓN ───
+// --- NAVEGACIÓN ---
 function goStep(n) {
   document.getElementById('step-'+currentStep).classList.remove('active');
   document.getElementById('step-'+n).classList.add('active');
@@ -826,7 +826,7 @@ function updateProgress() {
   }
 }
 
-// ─── VALIDACIÓN ───
+// --- VALIDACIÓN ---
 const stepValidations = {
   1: [
     { field:'nombre', id:'f-nombre', msg:'Campo obligatorio' },
@@ -870,12 +870,12 @@ function nextStep(from) {
   else goStep(from+1);
 }
 
-// ─── ENVÍO A GOOGLE SHEETS ───
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpO9X-RKy60bWV6VXZSHwUw7QB0xlpDdFk-wG5AKJkjWzAZskXU80BMBnblez2MnQ/exec;
+// --- ENVÍO A GOOGLE SHEETS ---
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwpO9X-RKy60bWV6VXZSHwUw7QB0xlpDdFk-wG5AKJkjWzAZskXU80BMBnblez2MnQ/exec';
 
 async function submitToSheets() {
   const btn = document.querySelector('#step-4 .btn-primary');
-  btn.textContent = 'Enviando…';
+  btn.textContent = 'Enviando...';
   btn.disabled = true;
 
   const nombre  = document.getElementById('nombre').value.trim();
@@ -915,34 +915,34 @@ async function submitToSheets() {
     generateSummary();
     goStep(5);
   } catch(err) {
-    btn.textContent = 'Enviar registro →';
+    btn.textContent = 'Enviar registro ->';
     btn.disabled = false;
     alert('Error al enviar. Comprueba tu conexión e inténtalo de nuevo.');
     console.error(err);
   }
 }
 
-// ─── SOPORTE DNI ───
+// --- SOPORTE DNI ---
 function toggleSoporte() {
   const t = document.getElementById('tipo-doc').value;
   document.getElementById('f-soporte').style.display = (t==='DNI')?'block':'none';
 }
 
-// ─── FORMATO FECHA ───
+// --- FORMATO FECHA ---
 function fmtDate(d) {
-  if(!d) return '—';
+  if(!d) return '--';
   const [y,m,dd]=d.split('-');
   return `${dd}/${m}/${y}`;
 }
 
-// ─── GENERAR RESUMEN ───
+// --- GENERAR RESUMEN ---
 function generateSummary() {
   const nombre    = document.getElementById('nombre').value.trim();
   const apellidos = document.getElementById('apellidos').value.trim();
   const full = `${nombre} ${apellidos}`.trim();
 
   const sexoMap = {M:'Masculino',F:'Femenino',X:'No binario / otro'};
-  const sexo = sexoMap[document.getElementById('sexo').value] || '—';
+  const sexo = sexoMap[document.getElementById('sexo').value] || '--';
 
   const tipoDoc   = document.getElementById('tipo-doc').value;
   const numDoc    = document.getElementById('num-doc').value.trim().toUpperCase();
@@ -958,20 +958,20 @@ function generateSummary() {
   const salida    = document.getElementById('fecha-salida').value;
 
   // Summary card
-  document.getElementById('rs-nombre').textContent   = full || '—';
+  document.getElementById('rs-nombre').textContent   = full || '--';
   document.getElementById('rs-fecha-nac').textContent= fmtDate(fechaNac);
   document.getElementById('rs-sexo').textContent     = sexo;
-  document.getElementById('rs-pais-nac').textContent = paisNac || '—';
-  document.getElementById('rs-tipo-doc').textContent = tipoDoc || '—';
-  document.getElementById('rs-num-doc').textContent  = numDoc || '—';
+  document.getElementById('rs-pais-nac').textContent = paisNac || '--';
+  document.getElementById('rs-tipo-doc').textContent = tipoDoc || '--';
+  document.getElementById('rs-num-doc').textContent  = numDoc || '--';
   document.getElementById('rs-exp').textContent      = fmtDate(fechaExp);
-  document.getElementById('rs-nac').textContent      = nac || '—';
-  document.getElementById('rs-pais-res').textContent = paisRes || '—';
-  document.getElementById('rs-mun-res').textContent  = munRes || '—';
+  document.getElementById('rs-nac').textContent      = nac || '--';
+  document.getElementById('rs-pais-res').textContent = paisRes || '--';
+  document.getElementById('rs-mun-res').textContent  = munRes || '--';
   document.getElementById('rs-entrada').textContent  = fmtDate(entrada);
   document.getElementById('rs-salida').textContent   = fmtDate(salida);
-  document.getElementById('rs-alojamiento').textContent = config.alojamiento || '—';
-  document.getElementById('rs-reserva').textContent     = reserva || '—';
+  document.getElementById('rs-alojamiento').textContent = config.alojamiento || '--';
+  document.getElementById('rs-reserva').textContent     = reserva || '--';
 
   if(tipoDoc==='DNI' && soporte) {
     document.getElementById('rs-soporte-row').style.display='flex';
@@ -981,8 +981,8 @@ function generateSummary() {
   // Texto parte
   const now = new Date().toLocaleString('es-ES');
   const lines = [
-    `PARTE DE VIAJEROS — RD 933/2021`,
-    `═══════════════════════════════════`,
+    `PARTE DE VIAJEROS -- RD 933/2021`,
+    `===================================`,
     `ALOJAMIENTO`,
     `  Nombre:       ${config.alojamiento || 'No especificado'}`,
     `  Dirección:    ${config.direccion || 'No especificada'}`,
@@ -998,7 +998,7 @@ function generateSummary() {
     `DOCUMENTO`,
     `  Tipo:         ${tipoDoc}`,
     `  Número:       ${numDoc}`,
-    tipoDoc==='DNI' && soporte ? `  Nº soporte:   ${soporte}` : null,
+    tipoDoc==='DNI' && soporte ? `  No soporte:   ${soporte}` : null,
     `  Expedición:   ${fmtDate(fechaExp)}`,
     ``,
     `RESIDENCIA HABITUAL`,
@@ -1018,7 +1018,7 @@ function generateSummary() {
   window._parteTexto = lines;
 }
 
-// ─── COPIAR ───
+// --- COPIAR ---
 function copyParte() {
   const t = window._parteTexto || document.getElementById('texto-parte').textContent;
   if(navigator.clipboard) {
@@ -1040,14 +1040,14 @@ function showToast() {
   setTimeout(()=>toast.classList.remove('show'),2500);
 }
 
-// ─── WHATSAPP ───
+// --- WHATSAPP ---
 function shareWhatsApp(e) {
   e.preventDefault();
   const t = encodeURIComponent(window._parteTexto || '');
   window.open(`https://wa.me/?text=${t}`, '_blank');
 }
 
-// ─── RESET ───
+// --- RESET ---
 function resetForm() {
   ['nombre','apellidos','fecha-nac','pais-nac','num-doc','num-soporte',
    'fecha-exp','nacionalidad','pais-res','municipio-res','fecha-entrada','fecha-salida','num-reserva']
@@ -1060,13 +1060,13 @@ function resetForm() {
   goStep(1);
 }
 
-// ─── INIT fecha entrada por defecto ───
+// --- INIT fecha entrada por defecto ---
 window.addEventListener('load', () => {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('fecha-entrada').value = today;
   const tom = new Date(); tom.setDate(tom.getDate()+2);
   document.getElementById('fecha-salida').value = tom.toISOString().split('T')[0];
-  document.getElementById('prop-name-header').textContent = 'Configura tu alojamiento abajo ↓';
+  document.getElementById('prop-name-header').textContent = 'Configura tu alojamiento abajo v';
 });
 </script>
 </body>
